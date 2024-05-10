@@ -34,6 +34,19 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
+
+        // collections
+        const bookCollection = client.db("BookNest").collection('bookCollection')
+  
+        
+        
+        // server and client collaboration starts here
+        app.get('/books', async(req, res)=> {
+            const cursor = bookCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
