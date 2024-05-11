@@ -37,7 +37,7 @@ async function run() {
 
         // collections
         const bookCollection = client.db("BookNest").collection('bookCollection')
-
+        const categoriesCollection = client.db("BookNest").collection('categories')
 
 
         // server and client collaboration starts here
@@ -55,6 +55,15 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        app.get('/books/categories/:category', async(req, res)=>{
+            const category = req.params.category;
+            console.log(req.query)
+            const query = {category: category};
+            const cursor = bookCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        } )
 
         app.post('/books', async(req, res)=>{
             const newBook = req.body;
@@ -79,6 +88,13 @@ async function run() {
                 }
             }
             const result = bookCollection.updateOne(query, updateData)
+            res.send(result)
+        })
+
+
+        app.get('/categories', async(req, res)=> {
+            const cursor = categoriesCollection.find()
+            const result = await cursor.toArray()
             res.send(result)
         })
 
