@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 require('dotenv').config();
 const app = express()
@@ -37,16 +37,51 @@ async function run() {
 
         // collections
         const bookCollection = client.db("BookNest").collection('bookCollection')
-  
-        
-        
+
+
+
         // server and client collaboration starts here
-        app.get('/books', async(req, res)=> {
+        app.get('/books', async (req, res) => {
             const cursor = bookCollection.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        
+
+        app.get('/books/:id', async (req, res) => {
+            const id = req.params.id
+            console.log(id)
+            const query = { _id: new ObjectId(id) }
+            const cursor = bookCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.post('/books', async(req, res)=>{
+            const newBook = req.body;
+            console.log(newBook);
+            const cursor = bookCollection.insertOne(newBook)
+            res.send({success: cursor})
+        })
+
+
+        app.patch('/books/:id', async (req, res) => {
+            const id = req.params.id;
+            const newData = req.body;
+            console.log(id, newData)
+            const query = { _id: new ObjectId(id) }
+            const updateData = {
+                $set: {
+                    name: newData.name,
+                    author: newData.author,
+                    category: newData.category,
+                    rating: newData.rating,
+                    image: newData.image
+                }
+            }
+            const result = bookCollection.updateOne(query, updateData)
+            res.send(result)
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
