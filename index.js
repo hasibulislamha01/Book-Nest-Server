@@ -38,7 +38,7 @@ async function run() {
         // collections
         const bookCollection = client.db("BookNest").collection('bookCollection')
         const categoriesCollection = client.db("BookNest").collection('categories')
-
+        const borrowedCollection =client.db("BookNest").collection('borrowedBooks')
 
         // server and client collaboration starts here
         app.get('/books', async (req, res) => {
@@ -49,34 +49,34 @@ async function run() {
 
         app.get('/books/:id', async (req, res) => {
             const id = req.params.id
-            console.log(id)
+            // console.log(id)
             const query = { _id: new ObjectId(id) }
             const cursor = bookCollection.find(query);
             const result = await cursor.toArray()
             res.send(result)
         })
 
-        app.get('/books/categories/:category', async(req, res)=>{
+        app.get('/books/categories/:category', async (req, res) => {
             const category = req.params.category;
-            console.log(req.query)
-            const query = {category: category};
+            // console.log(req.query)
+            const query = { category: category };
             const cursor = bookCollection.find(query);
             const result = await cursor.toArray()
             res.send(result)
-        } )
+        })
 
-        app.post('/books', async(req, res)=>{
+        app.post('/books', async (req, res) => {
             const newBook = req.body;
-            console.log(newBook);
-            const cursor = bookCollection.insertOne(newBook)
-            res.send({success: cursor})
+            // console.log(newBook);
+            const cursor = await bookCollection.insertOne(newBook)
+            res.send({ success: cursor })
         })
 
 
         app.patch('/books/:id', async (req, res) => {
             const id = req.params.id;
             const newData = req.body;
-            console.log(id, newData)
+            // console.log(id, newData)
             const query = { _id: new ObjectId(id) }
             const updateData = {
                 $set: {
@@ -92,23 +92,42 @@ async function run() {
         })
 
 
-        app.patch('/books/borrowed/:id', async(req, res)=>{
+        app.patch('/books/borrowed/:id', async (req, res) => {
             const bookId = req.params.id;
-            console.log(bookId)
-            const query = {_id: new ObjectId(bookId)};
+            // console.log(bookId)
+            const query = { _id: new ObjectId(bookId) };
             const updateBook = {
                 $inc: {
                     quantity: -1
                 }
             }
             const result = await bookCollection.updateOne(query, updateBook)
-            res.send({Success: `updated ${bookId}`})
+            res.send({ Success: `updated ${bookId}` })
         })
 
 
-        app.get('/categories', async(req, res)=> {
+        app.get('/categories', async (req, res) => {
             const cursor = categoriesCollection.find()
             const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.post('/borrowedBooks', async (req, res) => {
+            const data = req.body;
+            console.log(data);
+            const result = await borrowedCollection.insertOne(data)
+            res.send({success: 'book added to borrowed list'})
+        })
+
+        app.get('/borrowedBooks', async(req, res)=>{
+            const cursor = borrowedCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/borrowedBooks/:email', async(req, res)=>{
+            const email = req.params.email;
+            const query = {borrowerEmail: email}
+            const result = await borrowedCollection.find(query).toArray()
             res.send(result)
         })
 
