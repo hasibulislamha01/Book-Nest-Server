@@ -87,8 +87,22 @@ async function run() {
                     image: newData.image
                 }
             }
-            const result = bookCollection.updateOne(query, updateData)
+            const result = await bookCollection.updateOne(query, updateData)
             res.send(result)
+        })
+
+
+        app.patch('/books/borrowed/:id', async(req, res)=>{
+            const bookId = req.params.id;
+            console.log(bookId)
+            const query = {_id: new ObjectId(bookId)};
+            const updateBook = {
+                $inc: {
+                    quantity: -1
+                }
+            }
+            const result = await bookCollection.updateOne(query, updateBook)
+            res.send({Success: `updated ${bookId}`})
         })
 
 
