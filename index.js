@@ -105,6 +105,28 @@ async function run() {
             res.send({ Success: `updated ${bookId}` })
         })
 
+        app.patch('/books/returned/:id', async (req, res) => {
+            const bookId = req.params.id;
+            // console.log(bookId)
+            const query = { _id: new ObjectId(bookId) };
+            const updateBook = {
+                $inc: {
+                    quantity: 1
+                }
+            }
+            const result = await bookCollection.updateOne(query, updateBook)
+            res.send({ Success: `updated ${bookId}` })
+        })
+
+        app.delete('/borrowedBooks/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(bookId)
+            const query = { borrowerEmail: email };
+            
+            const result = await borrowedCollection.deleteOne(query)
+            res.send({ Success: `deleted from ${email}` })
+        })
+
 
         app.get('/categories', async (req, res) => {
             const cursor = categoriesCollection.find()
