@@ -114,7 +114,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/categories/:category', async (req, res) => {
+        app.get('/books/categories/:category', async (req, res) => {
             const category = req.params.category;
             // console.log(req.query)
             const query = { category: category };
