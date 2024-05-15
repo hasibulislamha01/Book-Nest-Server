@@ -114,7 +114,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/books/categories/:category', async (req, res) => {
+        app.get('/categories/:category', async (req, res) => {
             const category = req.params.category;
             // console.log(req.query)
             const query = { category: category };
@@ -176,12 +176,12 @@ async function run() {
             res.send({ Success: `updated ${bookId}` })
         })
 
-        app.delete('/borrowedBooks/:email', logger, verifyToken, async (req, res) => {
+        app.delete('/borrowedBooks/:email', async (req, res) => {
             const email = req.params.email;
-            console.log('token owner', req.user)
-            if (req.user.email !== req.query.email) {
-                res.status(403).send({ message: 'forbidden access' })
-            }
+            // console.log('token owner', req.user)
+            // if (req.user.email !== req.query.email) {
+            //     res.status(403).send({ message: 'forbidden access' })
+            // }
             // console.log(bookId)
             const query = { borrowerEmail: email };
 
